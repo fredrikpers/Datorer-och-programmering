@@ -48,15 +48,19 @@ void skriv_histogram_abs(LETTER letter[ANTAL_BOKSTAVER]) {
         cout << letter[i].letter << " : " <<letter[i].amount << "\n";
     }
 }
+//Går igenom hela listan och sätter position 0 till A, position 1 till B osv.
+//Sätter även alla amount till 0
+void setToDefault(LETTER array[ANTAL_BOKSTAVER]){
+
+  for (int i = 0; i < ANTAL_BOKSTAVER; i++) {
+      array[i].amount = 0;
+      array[i].letter = (char) (65 + i);
+  }
+}
 
 void berakna_histogram_abs(string input, LETTER letter[ANTAL_BOKSTAVER]) {
 
-    //Går igenom hela listan och sätter position 0 till A, position 1 till B osv.
-    //Sätter även alla amount till 0
-    for (int i = 0; i < ANTAL_BOKSTAVER; i++) {
-        letter[i].amount = 0;
-        letter[i].letter = (char)(65 + i);
-    }
+    setToDefault(letter);
 
     //Går igenom hela inputen
     for (char i : input) {
