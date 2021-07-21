@@ -44,6 +44,8 @@ void abs_till_rel(LETTER letter[ANTAL_BOKSTAVER], LETTER letter_rel[ANTAL_BOKSTA
 
 void setToDefault(LETTER array[ANTAL_BOKSTAVER]);
 
+void plotta_histogram_rel(LETTER letter_rel[ANTAL_BOKSTAVER]);
+
 
 int main(){
 
@@ -56,6 +58,7 @@ int main(){
     getline(cin, input);
     berakna_histogram_abs(input, letter);
     abs_till_rel(letter, letter_rel);
+    plotta_histogram_rel(letter_rel);
 
 
 
@@ -90,6 +93,22 @@ void abs_till_rel(LETTER letter[ANTAL_BOKSTAVER], LETTER letter_rel[ANTAL_BOKSTA
         cout << letter_rel[i].letter << " : " <<letter_rel[i].amount << "\n";
     }
 
+}
+
+void plotta_histogram_rel(LETTER letter_rel[ANTAL_BOKSTAVER]){
+
+    for(int i=0; i<ANTAL_BOKSTAVER; i++){
+        cout << letter_rel[i].letter << " ";
+
+        double j = letter_rel[i].amount;
+
+        while(j >= 0.5) {
+            cout << "*";
+            j -= 0.5;
+        }
+        cout <<"\n";
+
+    }
 }
 
 void berakna_histogram_abs(string input, LETTER letter[ANTAL_BOKSTAVER]) {
