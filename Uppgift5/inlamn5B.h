@@ -1,0 +1,14 @@
+//
+// Created by Fredrik Pettersson on 2021-08-09.
+//
+
+#ifndef DATORER_OCH_PROGRAMMERING_INLAMN5B_H
+#define DATORER_OCH_PROGRAMMERING_INLAMN5B_H
+
+
+class inlamn5B {
+
+};
+
+
+#endif //DATORER_OCH_PROGRAMMERING_INLAMN5B_H

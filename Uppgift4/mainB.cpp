@@ -1,13 +1,12 @@
 //
 // Created by Fredrik Pettersson on 2021-07-20.
-//
 
-#include "mainB.h"
 #include <string>
 #include <cctype>
 #include <iostream>
-#include <fstream>
 #include <cmath>
+#include <fstream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -46,21 +45,29 @@ void setToDefault(LETTER array[ANTAL_BOKSTAVER]);
 
 void plotta_histogram_rel(LETTER letter_rel[ANTAL_BOKSTAVER]);
 
+void tolkning(LETTER letter_rel[ANTAL_BOKSTAVER], LETTER letter[ANTAL_BOKSTAVER]);
+
+string namn_pa_fil(string input);
+
+string inlasning(string textfile);
 
 int main(){
 
     string input;
+    string textfile;
+    string text;
 
     LETTER letter[ANTAL_BOKSTAVER];
     LETTER letter_rel[ANTAL_BOKSTAVER];
 
-    cout << "Ge en rad med text: \n";
-    getline(cin, input);
-    berakna_histogram_abs(input, letter);
+    cout << "Ange filnamn: \n";
+    getline( cin, input );
+    textfile = namn_pa_fil(input);
+    text = inlasning(textfile);
+    berakna_histogram_abs(text, letter);
     abs_till_rel(letter, letter_rel);
+    tolkning(letter_rel, letter);
     plotta_histogram_rel(letter_rel);
-
-
 
     return 0;
 }
@@ -74,8 +81,6 @@ void setToDefault(LETTER array[ANTAL_BOKSTAVER]){
     }
 }
 
-
-
 void abs_till_rel(LETTER letter[ANTAL_BOKSTAVER], LETTER letter_rel[ANTAL_BOKSTAVER]){
     int num_of_letters = 0;
     setToDefault(letter_rel);
@@ -86,21 +91,18 @@ void abs_till_rel(LETTER letter[ANTAL_BOKSTAVER], LETTER letter_rel[ANTAL_BOKSTA
     }
 
     for(int i = 0; i < ANTAL_BOKSTAVER; i++){
-        letter_rel[i].amount = round((letter[i].amount/num_of_letters) *1000)/10.0;
+        letter_rel[i].amount = (letter[i].amount/num_of_letters) *100;
     }
-
-    for (int i = 0; i < ANTAL_BOKSTAVER; i++) {
-        cout << letter_rel[i].letter << " : " <<letter_rel[i].amount << "\n";
-    }
-
 }
 
-void plotta_histogram_rel(LETTER letter_rel[ANTAL_BOKSTAVER]){
+void plotta_histogram_rel(LETTER array[ANTAL_BOKSTAVER]){
+
+    cout << "Bokstavsfördelning:\n \n";
 
     for(int i=0; i<ANTAL_BOKSTAVER; i++){
-        cout << letter_rel[i].letter << " ";
+        cout << array[i].letter << " ";
 
-        double j = letter_rel[i].amount;
+        double j = array[i].amount;
 
         while(j >= 0.5) {
             cout << "*";
@@ -129,3 +131,261 @@ void berakna_histogram_abs(string input, LETTER letter[ANTAL_BOKSTAVER]) {
         }
     }
 }
+
+void tolkning(LETTER letter_rel[ANTAL_BOKSTAVER], LETTER letter[ANTAL_BOKSTAVER]){
+
+    double highest_freq = std::numeric_limits<int>::max();
+    double freq = 0;
+    int indexLanguage = 0;
+    int num_of_letters = 0;
+    string language[4] = {"Engelska","Franska","Svenska","Tyska"};
+
+    //Går igenom listan och summerar ihop antalet bokstäver
+    for(int i = 0; i < ANTAL_BOKSTAVER; i++){
+        num_of_letters += (int)letter[i].amount;
+    }
+
+    cout << "\nResultat för bokstäverna A-Z\n\n";
+    cout << "Totala antalet bokstäver: " << num_of_letters <<"\n";
+
+    for(int i = 0; i < ANTAL_SPRAK; i++){
+
+        for(int j = 0; j < ANTAL_BOKSTAVER; j++){
+            freq += (TOLK_HJALP[i][j] - letter_rel[j].amount) * (TOLK_HJALP[i][j] - letter_rel[j].amount);
+        }
+
+        if(freq < highest_freq){
+            highest_freq = freq;
+            indexLanguage = i;
+        }
+        cout << language[i] <<" har kvadratsumma= " << freq <<"\n";
+        freq = 0;
+    }
+    cout << "Det är mest troligt att språket är " << language[indexLanguage]+ "\n\n";
+}
+
+string inlasning(string textfile){
+
+    string row;
+    string fullText = "";
+    string path = "/Users/fredrikpettersson/CLionProjects/Datorer-och-programmering/Uppgift4/"+textfile;
+
+    ifstream fin(path.c_str());
+
+    if ( !fin )
+    {
+        cout << "Det finns ingen fil med namnet " << textfile;
+        exit( EXIT_FAILURE );
+    }
+
+    while(getline(fin,row)){
+        fullText += row;
+    }
+
+    return fullText;
+}
+
+string namn_pa_fil(string input){
+
+    if (input.rfind(".txt") == string::npos){
+       input.append(".txt");
+    }
+
+    return input;
+}
+
+/*
+// -------------------------------------------------------
+// Rapport om uppgiften
+
+=================================
+Testdata 1
+=================================
+
+Ange filnamn:
+doyle
+
+Resultat för bokstäverna A-Z
+
+Totala antalet bokstäver: 12885
+Engelska har kvadratsumma= 1.75771
+Franska har kvadratsumma= 96.1956
+Svenska har kvadratsumma= 73.3371
+Tyska har kvadratsumma= 116.072
+Det är mest troligt att språket är Engelska
+
+Bokstavsfördelning:
+
+A ****************
+B **
+C ******
+D *******
+E ************************
+F ****
+G **
+H ************
+I ***************
+J
+K *
+L *******
+M *****
+N ************
+O ***************
+P ***
+Q
+R ***********
+S ************
+T ******************
+U *****
+V **
+W ****
+X
+Y ****
+Z
+
+=================================
+Testdata 2
+=================================
+
+Ange filnamn:
+goethe.txt
+
+Resultat för bokstäverna A-Z
+
+Totala antalet bokstäver: 14027
+Engelska har kvadratsumma= 107.856
+Franska har kvadratsumma= 85.205
+Svenska har kvadratsumma= 160.318
+Tyska har kvadratsumma= 1.04313
+Det är mest troligt att språket är Tyska
+
+Bokstavsfördelning:
+
+A **********
+B ***
+C *******
+D *********
+E *********************************
+F **
+G ******
+H ***********
+I *****************
+J
+K **
+L ******
+M ******
+N *********************
+O ****
+P
+Q
+R ************
+S *************
+T ***********
+U *******
+V *
+W ***
+X
+Y *
+Z **
+
+
+=================================
+Testdata 3
+=================================
+
+Ange filnamn:
+lagerlof
+
+Resultat för bokstäverna A-Z
+
+Totala antalet bokstäver: 12221
+Engelska har kvadratsumma= 86.6804
+Franska har kvadratsumma= 145.722
+Svenska har kvadratsumma= 8.88258
+Tyska har kvadratsumma= 170.223
+Det är mest troligt att språket är Svenska
+
+Bokstavsfördelning:
+
+A **********************
+B *
+C **
+D ***********
+E *******************
+F ****
+G ********
+H *******
+I ********
+J **
+K ******
+L **********
+M *******
+N ******************
+O ********
+P **
+Q
+R **************
+S *************
+T *****************
+U ***
+V ******
+W
+X
+Y
+Z
+
+
+=================================
+Testdata 4
+=================================
+
+Ange filnamn:
+verne.txt
+
+Resultat för bokstäverna A-Z
+
+Totala antalet bokstäver: 11417
+Engelska har kvadratsumma= 112.425
+Franska har kvadratsumma= 0.885142
+Svenska har kvadratsumma= 149.256
+Tyska har kvadratsumma= 90.491
+Det är mest troligt att språket är Franska
+
+Bokstavsfördelning:
+
+A ****************
+B **
+C *******
+D ********
+E **********************************
+F *
+G **
+H *
+I *************
+J
+K
+L **********
+M *****
+N ***************
+O **********
+P *****
+Q *
+R *************
+S ****************
+T *************
+U ***********
+V **
+W
+X *
+Y
+Z
+
+=================================
+Testdata 5
+=================================
+
+Ange filnamn:
+Lisa.txt
+Det finns ingen fil med namnet Lisa.txt
+
+ */
