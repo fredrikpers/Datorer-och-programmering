@@ -1,0 +1,14 @@
+//
+// Created by Fredrik Pettersson on 2021-08-10.
+//
+
+#ifndef DATORER_OCH_PROGRAMMERING_INLAMN6A_H
+#define DATORER_OCH_PROGRAMMERING_INLAMN6A_H
+
+
+class inlamn6A {
+
+};
+
+
+#endif //DATORER_OCH_PROGRAMMERING_INLAMN6A_H
